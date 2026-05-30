@@ -10,7 +10,7 @@ sys.path.append(base_dir)
 MLIR_OPT = "/LLVM-22.1.0-rc1-Linux-X64/bin/mlir-opt"
 MLIR_TRANSLATE = "/LLVM-22.1.0-rc1-Linux-X64/bin/mlir-translate"
 MLIR_OPT_PYTORCHSIM = "/riscv-llvm/bin/mlir-opt"
-STABLEHLO_OPT = "/workspace/stablehlo/build/bin/stablehlo-opt"
+STABLEHLO_OPT = "/workspace/PyTorchSim/Tensorflow/build/bin/stablehlo-opt"
 OUT_DIR = "/workspace/PyTorchSim/tests/TensorFlow/out"
 os.makedirs(OUT_DIR, exist_ok=True)
 

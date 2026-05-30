@@ -1,0 +1,17 @@
+#loc1 = loc("XLA_Args")
+module @a_inference_add_fn_108__.1 attributes {mhlo.cross_program_prefetches = [], mhlo.input_output_alias = [], mhlo.is_dynamic = false, mhlo.use_auto_spmd_partitioning = false} {
+  func.func @main(%arg0: tensor<2xf32> loc("XLA_Args"), %arg1: tensor<2xf32> loc("XLA_Args")) -> tensor<2xf32> {
+    %0 = stablehlo.reshape %arg0 : (tensor<2xf32>) -> tensor<2xf32> loc(#loc2)
+    %1 = stablehlo.reshape %arg1 : (tensor<2xf32>) -> tensor<2xf32> loc(#loc3)
+    %2 = stablehlo.add %0, %1 : tensor<2xf32> loc(#loc7)
+    %3 = stablehlo.reshape %2 : (tensor<2xf32>) -> tensor<2xf32> loc(#loc6)
+    return %3 : tensor<2xf32> loc(#loc)
+  } loc(#loc)
+} loc(#loc)
+#loc = loc(unknown)
+#loc2 = loc("reshape.2")
+#loc3 = loc("reshape.3")
+#loc4 = loc("add")
+#loc5 = loc("/opt/conda/lib/python3.11/site-packages/tensorflow/python/framework/ops.py":1221:0)
+#loc6 = loc("XLA_Retvals")
+#loc7 = loc(fused[#loc4, #loc5])

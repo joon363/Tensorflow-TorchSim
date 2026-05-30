@@ -3,7 +3,7 @@
 ```
 /LLVM-22.1.0-rc1-Linux-X64/bin/mlir-opt
 /LLVM-22.1.0-rc1-Linux-X64/bin/mlir-translate
-/workspace/stablehlo/build/bin/stablehlo-opt
+/workspace/PyTorchSim/Tensorflow/build/bin/stablehlo-opt
 ```
 
 PluggableDevice 세팅: PluggableDevice/README.md 참고
@@ -27,7 +27,7 @@ tar -xJf LLVM-22.1.0-rc1-Linux-X64.tar.xz
 # 2. stablehlo-opt Build
 
 ### 빌드한 파일을 올려 놓았습니다. 
-[build](https://github.com/joon363/StableHLO-compiler-pre-built-binary) 이거를 stablehlo/build 안에 클론하면 됩니다.
+[build](https://github.com/joon363/StableHLO-compiler-pre-built-binary) 이거를 PyTorchSim/Tensorflow/build 안에 클론하면 됩니다.
 
 직접 하는 법:
 ## 1. Clone repos
