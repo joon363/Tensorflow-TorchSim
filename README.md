@@ -1,7 +1,9 @@
+## At Local (Windows + cmd)
+
 git lfs install
 git clone https://github.com/PSAL-POSTECH/PyTorchSim.git
+cd PyTorchSim
 git clone https://github.com/joon363/Tensorflow-TorchSim Tensorflow
-git clone https://github.com/joon363/StableHLO-compiler-pre-built-binary.git build
 
 
 docker run -it ^
@@ -10,24 +12,27 @@ docker run -it ^
   -p 8888:8888 ^
   -v "%cd%:/workspace/PyTorchSim" ^
   -w /workspace/PyTorchSim ^
-  ghcr.io/psal-postech/torchsim-test-2-8:9bf6f67cab0b410b637db9a64fd74bb0451988bd ^
+  ghcr.io/psal-postech/torchsim-ci:v1.1.0 ^
   bash
 
-sudo apt update
-sudo apt install git-lfs
+## Inside the docker
 
-cd /workspace/PyTorchSim
-git clone https://github.com/joon363/Tensorflow-TorchSim Tensorflow
+apt update
+apt install git-lfs
 
 cd Tensorflow
-
-pip install mlir-python-bindings -f https://makslevental.github.io/wheels
-pip install jupyter tensorflow
-
-chmod +x /workspace/PyTorchSim/Tensorflow/build/bin/stablehlo-opt
-
 source /opt/conda/etc/profile.d/conda.sh
 conda activate
+
+pip install jupyter tensorflow
+pip install mlir-python-bindings -f https://makslevental.github.io/wheels
+
+chmod +x /workspace/PyTorchSim/Tensorflow/binaries/stablehlo-opt
+chmod +x /workspace/PyTorchSim/Tensorflow/binaries/stablehlo-translate
+chmod +x /workspace/PyTorchSim/Tensorflow/binaries/stablehlo-lsp-server
+chmod +x /workspace/PyTorchSim/Tensorflow/binaries/mlir-opt
+chmod +x /workspace/PyTorchSim/Tensorflow/binaries/mlir-translate
+
 pkill -9 -f jupyter
 pkill -9 -f ipykernel
 pkill -9 -f python
