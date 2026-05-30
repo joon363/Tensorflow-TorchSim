@@ -1,0 +1,1 @@
+ps -eo pid,%cpu,%mem,cmd --sort=-%cpu > ps_cpu_sorted.txt

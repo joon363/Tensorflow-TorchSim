@@ -1,0 +1,52 @@
+Step 1: torchdynamo start tracing inner /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py:15
+TRACE starts_line /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py:15 in inner (wrap_inline)
+        @functools.wraps(fn)
+TRACE starts_line /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py:17 in inner (wrap_inline.inner)
+            return fn(*args, **kwargs)
+TRACE LOAD_DEREF fn []
+TRACE LOAD_FAST args [LazyVariableTracker()]
+TRACE BUILD_MAP 0 [LazyVariableTracker(), LazyVariableTracker()]
+TRACE LOAD_FAST kwargs [LazyVariableTracker(), LazyVariableTracker(), ConstDictVariable()]
+TRACE DICT_MERGE 1 [LazyVariableTracker(), LazyVariableTracker(), ConstDictVariable(), LazyVariableTracker()]
+TRACE CALL_FUNCTION_EX 1 [LazyVariableTracker(), LazyVariableTracker(), ConstDictVariable()]
+create_graph_input L_args_0_ L['args'][0]
+wrap_to_fake L['args'][0] (2,) [<DimDynamic.STATIC: 2>] [None]
+create_graph_input L_args_1_ L['args'][1]
+wrap_to_fake L['args'][1] (2,) [<DimDynamic.STATIC: 2>] [None]
+TRACE RETURN_VALUE None [TensorVariable()]
+Step 1: torchdynamo done tracing inner (RETURN_VALUE)
+RETURN_VALUE triggered compile
+COMPILING GRAPH due to GraphCompileReason(reason='return_value', user_stack=[<FrameSummary file /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py, line 17 in inner>], graph_break=False)
+TRACED GRAPH
+ ===== __compiled_fn_0 =====
+ <eval_with_key>.0 class GraphModule(torch.nn.Module):
+    def forward(self, L_args_0_ : torch.Tensor, L_args_1_ : torch.Tensor):
+        l_args_0_ = L_args_0_
+        l_args_1_ = L_args_1_
+        
+        # File: /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py:17, code: return fn(*args, **kwargs)
+        add = torch.add(l_args_0_, l_args_1_);  l_args_0_ = l_args_1_ = None
+        return (add,)
+        
+
+Tabulate module missing, please install tabulate to log the graph in tabular format, logging code instead:
+TRACED GRAPH
+ ===== __compiled_fn_0 =====
+ <eval_with_key>.0 class GraphModule(torch.nn.Module):
+    def forward(self, L_args_0_ : torch.Tensor, L_args_1_ : torch.Tensor):
+        l_args_0_ = L_args_0_
+        l_args_1_ = L_args_1_
+        
+        # File: /opt/conda/lib/python3.10/site-packages/torch/_dynamo/external_utils.py:17, code: return fn(*args, **kwargs)
+        add = torch.add(l_args_0_, l_args_1_);  l_args_0_ = l_args_1_ = None
+        return (add,)
+        
+
+TRACED GRAPH TENSOR SIZES
+===== __compiled_fn_0 =====
+l_args_0_: (2,)
+l_args_1_: (2,)
+add: (2,)
+
+Step 2: calling compiler function inductor
+Step 2: done compiler function inductor

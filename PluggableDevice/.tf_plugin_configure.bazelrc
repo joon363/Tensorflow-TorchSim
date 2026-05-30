@@ -1,0 +1,12 @@
+build --action_env PYTHON_BIN_PATH="/opt/conda/bin/python"
+build --action_env PYTHON_LIB_PATH="/opt/conda/lib/python3.10/site-packages"
+build --python_path="/opt/conda/bin/python"
+build --action_env TF_HEADER_DIR="/opt/conda/lib/python3.10/site-packages/tensorflow/include"
+build --action_env TF_SHARED_LIBRARY_DIR="/opt/conda/lib/python3.10/site-packages/tensorflow/"
+build --action_env TF_CXX11_ABI_FLAG="1"
+build --action_env PYTHON_LINK_LIB_NAME="python3.10"
+build --action_env PYTHON_LINK_PATH="/opt/conda/lib"
+build:opt --copt=-march=native
+build:opt --copt=-Wno-sign-compare
+build:opt --host_copt=-march=native
+build:opt --define with_default_optimizations=true

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my_device"
+version = "0.0.1"
+description = "setup.py file to build wheel for my_device"
+readme = "README"
+requires-python = ">=3.6"
+dynamic = ["dependencies"]
+authors = [
+  {name = "Junhyeok Park", email = "joon363@postech.ac.kr"},
+]

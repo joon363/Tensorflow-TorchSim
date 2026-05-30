@@ -1,0 +1,15 @@
+workspace(name = "org_my_device")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+load("//third_party:version_check.bzl", "check_bazel_version_at_least")
+
+check_bazel_version_at_least("3.1.0")
+
+load("//my_device:tf_configure.bzl", "tf_configure")
+
+tf_configure(name = "local_config_tf")
+
+load("//my_device:workspace.bzl", "clean_dep", "demo_plugin_workspace")
+
+demo_plugin_workspace()
+
