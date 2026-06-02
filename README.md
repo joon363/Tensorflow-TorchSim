@@ -1,22 +1,25 @@
 ## At Local (Windows + cmd)
 
+Actually, we don't have to git clone pytorchsim but its ok..
+
 ```bash
 git lfs install
 git clone https://github.com/PSAL-POSTECH/PyTorchSim.git
 cd PyTorchSim
 git clone https://github.com/joon363/Tensorflow-TorchSim Tensorflow
+cd tensorflow
 ```
 
+Now mount tensorflow folder, frontend only
+
 ```bash
-docker run -it ^
-  --ipc=host ^
-  --name torchsim ^
-  -p 8888:8888 ^
-  -v "%cd%:/workspace/PyTorchSim" ^
+docker run -it --ipc=host --name torchsim_mine ^
+  -v "%cd%:/workspace/PyTorchSim/Tensorflow" ^
+  -v "%cd%\..\PyTorchSimFrontend:/workspace/PyTorchSimFrontend" ^
   -w /workspace/PyTorchSim ^
-  ghcr.io/psal-postech/torchsim-ci:v1.1.0 ^
-  bash
+  ghcr.io/psal-postech/torchsim-ci:v1.1.0 bash
 ```
+
 ## Inside the docker
 ```bash
 apt update

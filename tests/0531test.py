@@ -19,7 +19,8 @@ print("=== MLIR Preview ===")
 print(mlir_string[:500])
 
 # MLIR Python bindings로 파싱
-with ir.Context():
+with ir.Context() as ctx:
+    ctx.allow_unregistered_dialects = True
     module = ir.Module.parse(mlir_string)
 
     print("\n=== Parse Success ===")

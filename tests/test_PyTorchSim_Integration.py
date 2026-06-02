@@ -7,15 +7,15 @@ from pathlib import Path
 
 base_dir = os.environ.get('TORCHSIM_DIR', default='/workspace/PyTorchSim')
 sys.path.append(base_dir)
-MLIR_OPT = "/LLVM-22.1.0-rc1-Linux-X64/bin/mlir-opt"
-MLIR_TRANSLATE = "/LLVM-22.1.0-rc1-Linux-X64/bin/mlir-translate"
+MLIR_OPT = "/workspace/PyTorchSim/Tensorflow/binaries/mlir-opt"
+MLIR_TRANSLATE = "/workspace/PyTorchSim/Tensorflow/binaries/mlir-translate"
 MLIR_OPT_PYTORCHSIM = "/riscv-llvm/bin/mlir-opt"
-STABLEHLO_OPT = "/workspace/PyTorchSim/Tensorflow/build/bin/stablehlo-opt"
-OUT_DIR = "/workspace/PyTorchSim/tests/TensorFlow/out"
+STABLEHLO_OPT = "/workspace/PyTorchSim/Tensorflow/binaries/stablehlo-opt"
+OUT_DIR = "/workspace/PyTorchSim/TensorFlow/tests/out"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 # Default Config
-os.environ['TOGSIM_CONFIG']=f"{base_dir}/tutorial/session1/togsim_configs/togsim_config_functional_only.json"
+os.environ['TOGSIM_CONFIG']=f"{base_dir}/tutorial/session1/togsim_configs/togsim_config_functional_only.yml"
 os.environ['TORCHSIM_DUMP_LOG_PATH']=os.path.join(os.getcwd(), "togsim_results")
 # Test Config
 os.environ['TENSORFLOW_MLIR_DIRECT_TEST']="True"
@@ -74,15 +74,15 @@ z_dummy = tf.constant([0, 0], dtype=tf.float32)
 tf_to_MLIR(add_fn, x_dummy, y_dummy, z_dummy)
 
 # Set PyTorchSim
-from Scheduler.scheduler import PyTorchSimRunner
-device = PyTorchSimRunner.setup_device().custom_device()
+device = torch.device("npu:0")
 
 # Trigger PyTorchSim
-def no_op(x, y):
+def no_op(x, y, z):
     "PyTorchSim Will Use add_fn's MLIR, not this one"
-    return x*y
+    return x*y*z
 x = torch.tensor([1.0, 2.0], dtype=torch.float32, device=device)
 y = torch.tensor([3.0, 4.0], dtype=torch.float32, device=device)
+z = torch.tensor([5.0, 6.0], dtype=torch.float32, device=device)
 opt_fn = torch.compile(dynamic=False)(no_op)
-npu_out_test = opt_fn(x,y)
+npu_out_test = opt_fn(x,y,z)
 print(npu_out_test.cpu())

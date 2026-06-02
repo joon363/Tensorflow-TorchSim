@@ -1,2 +1,3 @@
 LLVM-22.1.0-rc1-Linux-X64.tar.xz
 LLVM-22.1.0-rc1-Linux-X64/**
+tests/out
