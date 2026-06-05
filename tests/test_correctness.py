@@ -85,6 +85,65 @@ def run_tf_test(name, tf_fn, inputs_tf, inputs_torch, dummy_fn, rtol=1e-4, atol=
             tf_out = tf_out[0]
         tf_out_np = tf_out.numpy()
         
+        # Construct arg_attributes for tf_to_MLIR transformation
+        arg_attributes = []
+        for idx, t in enumerate(inputs_torch):
+            arg_attributes.append((f"arg{idx}", [1, t.dtype, t.numel(), list(t.shape), list(t.stride())]))
+        
+        # Add output attribute
+        out_shape = list(tf_out.shape)
+        out_numel = tf_out_np.size
+        out_stride = []
+        current_stride = 1
+        for dim in reversed(out_shape):
+            out_stride.append(current_stride)
+            current_stride *= dim
+        out_stride.reverse()
+        arg_attributes.append(("buf0", [2, torch.float32, out_numel, out_shape, out_stride]))
+
+        # Perform the MLIR transformation in a separate process to avoid TF/MLIR library collision
+        import json
+        import subprocess
+        
+        serializable_arg_attrs = []
+        for name, attr in arg_attributes:
+            serializable_arg_attrs.append([
+                name,
+                [
+                    attr[0],
+                    str(attr[1]), # torch.dtype to string
+                    attr[2],
+                    attr[3],
+                    attr[4]
+                ]
+            ])
+            
+        args_json = json.dumps(serializable_arg_attrs)
+        
+        cmd = [
+            "python3", "-c",
+            "import sys, json, torch\n"
+            "from PyTorchSimFrontend.extension_codecache import transform_tf_mlir\n"
+            "content = sys.stdin.read()\n"
+            "arg_attrs = json.loads(sys.argv[1])\n"
+            "for item in arg_attrs:\n"
+            "    dtype_str = item[1][1]\n"
+            "    if 'float32' in dtype_str: item[1][1] = torch.float32\n"
+            "    elif 'float64' in dtype_str: item[1][1] = torch.float64\n"
+            "    elif 'int64' in dtype_str: item[1][1] = torch.int64\n"
+            "    elif 'int32' in dtype_str: item[1][1] = torch.int32\n"
+            "    elif 'bool' in dtype_str: item[1][1] = torch.bool\n"
+            "print(transform_tf_mlir(content, arg_attrs))",
+            args_json
+        ]
+        
+        tf_mlir_path = Path(OUT_DIR) / "tf-mlir.mlir"
+        proc = subprocess.run(cmd, input=tf_mlir_path.read_text(), capture_output=True, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError(f"MLIR transformation subprocess failed:\nStdout: {proc.stdout}\nStderr: {proc.stderr}")
+            
+        tf_mlir_path.write_text(proc.stdout)
+
         # 3. Trigger PyTorchSim
         device = torch.device("npu:0")
         torch_inputs = [t.to(device) for t in inputs_torch]
@@ -134,6 +193,23 @@ def relu_fn(x):
 @tf.function(jit_compile=True)
 def conv2d_fn(x, w):
     return tf.nn.conv2d(x, w, strides=[1, 1, 1, 1], padding='SAME')
+
+# --- Complex model functions ---
+
+@tf.function(jit_compile=True)
+def perceptron_fn(x, w, b):
+    """Single-layer perceptron: relu(x @ w + b)"""
+    return tf.nn.relu(tf.matmul(x, w) + b)
+
+@tf.function(jit_compile=True)
+def sigmoid_linear_fn(x, w, b):
+    """Logistic regression: sigmoid(x @ w + b) — single matmul kernel with sigmoid epilogue"""
+    return tf.math.sigmoid(tf.matmul(x, w) + b)
+
+@tf.function(jit_compile=True)
+def large_matmul_fn(x, w):
+    """Large matmul: tests bigger tensor shapes through the pipeline"""
+    return tf.matmul(x, w)
 
 if __name__ == "__main__":
     tests = []
@@ -193,6 +269,33 @@ if __name__ == "__main__":
     conv_w_pt = torch.tensor(conv_w_tf.numpy())
     dummy_conv = lambda x, w: x.repeat(1, 1, 1, 2) + w[0, 0, 0, 0] * 0.0
     tests.append(("Conv2D 14x14x8 to 16", conv2d_fn, [conv_x_tf, conv_w_tf], [conv_x_pt, conv_w_pt], dummy_conv))
+
+    # 9. Perceptron (matmul + bias + relu)
+    perc_x_tf = tf.random.normal([8, 32], seed=49)
+    perc_w_tf = tf.random.normal([32, 16], seed=50)
+    perc_b_tf = tf.random.normal([16], seed=51)
+    perc_x_pt = torch.tensor(perc_x_tf.numpy())
+    perc_w_pt = torch.tensor(perc_w_tf.numpy())
+    perc_b_pt = torch.tensor(perc_b_tf.numpy())
+    dummy_perceptron = lambda x, w, b: torch.nn.functional.relu(torch.matmul(x, w) + b)
+    tests.append(("Perceptron 8x32->16", perceptron_fn, [perc_x_tf, perc_w_tf, perc_b_tf], [perc_x_pt, perc_w_pt, perc_b_pt], dummy_perceptron))
+
+    # 10. Sigmoid Linear (logistic regression — single matmul+bias+sigmoid kernel)
+    sig_x_tf = tf.random.normal([8, 32], seed=52)
+    sig_w_tf = tf.random.normal([32, 16], seed=53)
+    sig_b_tf = tf.random.normal([16], seed=54)
+    sig_x_pt = torch.tensor(sig_x_tf.numpy())
+    sig_w_pt = torch.tensor(sig_w_tf.numpy())
+    sig_b_pt = torch.tensor(sig_b_tf.numpy())
+    dummy_sigmoid = lambda x, w, b: torch.sigmoid(torch.matmul(x, w) + b)
+    tests.append(("Sigmoid Linear 8x32->16", sigmoid_linear_fn, [sig_x_tf, sig_w_tf, sig_b_tf], [sig_x_pt, sig_w_pt, sig_b_pt], dummy_sigmoid))
+
+    # 11. Large Matmul (64x128 @ 128x32 — tests bigger tensor shapes)
+    lg_a_tf = tf.random.normal([64, 128], seed=55)
+    lg_b_tf = tf.random.normal([128, 32], seed=56)
+    lg_a_pt = torch.tensor(lg_a_tf.numpy())
+    lg_b_pt = torch.tensor(lg_b_tf.numpy())
+    tests.append(("Large Matmul 64x128x32", large_matmul_fn, [lg_a_tf, lg_b_tf], [lg_a_pt, lg_b_pt], dummy_matmul))
 
     results = []
     passed_count = 0
