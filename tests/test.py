@@ -50,13 +50,14 @@ import test_correctness
 import test_timing
 import plot_timing
 from tests_common import get_all_tests
+from tests_heavy import get_heavy_tests
 
 def main():
     print("================================================================================")
     print("         INTEGRATED VERIFICATION: Correctness & Timing")
     print("================================================================================")
     
-    tests = get_all_tests()
+    tests = get_all_tests() + get_heavy_tests()
     
     print("\n[Phase 1] Correctness Testing")
     with suppress_c_logs():
