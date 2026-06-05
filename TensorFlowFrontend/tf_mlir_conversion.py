@@ -8,57 +8,73 @@ logger = logging.getLogger("TensorFlowFrontend.tf_mlir_conversion")
 logger.setLevel(logging.WARNING)
 
 def transform_tf_mlir(content, arg_attributes=None):
-    # 0. Replace linalg.map (which fails in LLVM RISC-V lowering due to arity mismatch in older version) with linalg.fill
-    content = re.sub(
-        r"linalg\.map\s+outs\((%[a-zA-Z0-9_]+)\s*:\s*(memref\s*<[^>]+>)\)\s*\((%[a-zA-Z0-9_]+)\s*:\s*([^)]+)\)\s*\{(.*?)\blinalg\.yield\s+(%[a-zA-Z0-9_]+)\s*:\s*([a-zA-Z0-9_<>]+)\s*\}",
-        r"linalg.fill ins(\6 : \7) outs(\1 : \2)",
-        content,
-        flags=re.DOTALL
-    )
+    # We will run the standard structural transformation and flattening first
+    # to rename functions and flatten arguments, then pass it to compile_tf_to_npu_mlir.
 
-    # 0b. Replace memref.copy with loop-based copies (since bare-metal linker does not provide memrefCopy runtime function)
-    pattern_copy = r"memref\.copy\s+(%[a-zA-Z0-9_]+)\s*,\s*(%[a-zA-Z0-9_]+)\s*:\s*(memref\s*<([a-zA-Z0-9_,? [\]:<>]+)>)\s+to\s+(memref\s*<([a-zA-Z0-9_,? [\]:<>]+)>)"
-    def repl_copy(match):
-        src_var = match.group(1)
-        dst_var = match.group(2)
-        src_type = match.group(3)
-        dst_type = match.group(5)
-        type_inner = match.group(4)
-        shape_part = type_inner.split(',')[0].strip()
-        shape_dims = shape_part.split('x')
-        dims = [int(d) for d in shape_dims[:-1]]
-        lines = []
-        lines.append("    %c0_copy = arith.constant 0 : index")
-        lines.append("    %c1_copy = arith.constant 1 : index")
-        for idx, dim in enumerate(dims):
-            lines.append(f"    %dim_{idx}_copy = arith.constant {dim} : index")
-        indent = "    "
-        loop_vars = []
-        for idx, dim in enumerate(dims):
-            loop_var = f"%idx_{idx}_copy"
-            loop_vars.append(loop_var)
-            lines.append(f"{indent}scf.for {loop_var} = %c0_copy to %dim_{idx}_copy step %c1_copy {{")
-            indent += "  "
-        indices_str = ", ".join(loop_vars)
-        lines.append(f"{indent}%val_copy = memref.load {src_var}[{indices_str}] : {src_type}")
-        lines.append(f"{indent}memref.store %val_copy, {dst_var}[{indices_str}] : {dst_type}")
-        for _ in range(len(dims)):
-            indent = indent[:-2]
-            lines.append(f"{indent}}}")
-        return "\n".join(lines)
-    
     from mlir import ir
     import mlir.dialects.func as func
     import mlir.dialects.memref as memref
     import mlir.dialects.scf as scf
     import mlir.dialects.arith as arith
-
-    content = re.sub(pattern_copy, repl_copy, content)
+    import mlir.dialects.linalg as linalg
 
     ctx = ir.Context()
     ctx.allow_unregistered_dialects = True
     with ctx, ir.Location.unknown():
         module = ir.Module.parse(content)
+
+        # 0. Structural transformations for linalg.map and memref.copy
+        to_erase = []
+
+        def walk_ops(op, callback):
+            callback(op)
+            for region in op.regions:
+                for block in region.blocks:
+                    for inner_op in list(block.operations):
+                        walk_ops(inner_op, callback)
+
+        def callback(op):
+            if op.name == "linalg.map":
+                block = op.regions[0].blocks[0]
+                yield_op = block.operations[-1]
+                if yield_op.name == "linalg.yield":
+                    yielded_val = yield_op.operands[0]
+                    out_val = op.operands[-1]
+                    with ir.InsertionPoint(op):
+                        linalg.fill(yielded_val, outs=[out_val])
+                    to_erase.append(op)
+            elif op.name == "memref.copy":
+                src = op.operands[0]
+                dst = op.operands[1]
+                src_type = ir.MemRefType(src.type)
+                shape = src_type.shape
+                
+                with ir.InsertionPoint(op):
+                    idx_type = ir.IndexType.get()
+                    c0 = arith.ConstantOp(idx_type, 0)
+                    c1 = arith.ConstantOp(idx_type, 1)
+                    
+                    current_ip = ir.InsertionPoint(op)
+                    loop_indices = []
+                    for dim in shape:
+                        dim_val = arith.ConstantOp(idx_type, dim, ip=current_ip)
+                        for_op = scf.ForOp(c0.result, dim_val.result, c1.result, ip=current_ip)
+                        loop_indices.append(for_op.induction_variable)
+                        
+                        loop_body = for_op.regions[0].blocks[0]
+                        yield_ip = ir.InsertionPoint.at_block_begin(loop_body)
+                        scf.YieldOp([], ip=yield_ip)
+                        current_ip = ir.InsertionPoint(loop_body.operations[0])
+                        
+                    val = memref.LoadOp(src, loop_indices, ip=current_ip)
+                    memref.StoreOp(val.result, dst, loop_indices, ip=current_ip)
+                to_erase.append(op)
+
+        walk_ops(module.operation, callback)
+
+        for op in to_erase:
+            op.operation.erase()
+
         
         # 1. Find entry func.func
         func_op = None
@@ -128,15 +144,13 @@ def transform_tf_mlir(content, arg_attributes=None):
                 for pt_name, pt_attr in pt_inputs:
                     pt_size = pt_attr[2]
                     element_type = ir.F32Type.get()
-                    flat_layout = ir.StridedLayoutAttr.get(dyn, [dyn])
-                    flat_type = ir.MemRefType.get([pt_size], element_type, flat_layout)
+                    flat_type = ir.MemRefType.get([pt_size], element_type)
                     new_input_types.append(flat_type)
                 
                 for pt_name, pt_attr in pt_outputs:
                     pt_size = pt_attr[2]
                     element_type = ir.F32Type.get()
-                    flat_layout = ir.StridedLayoutAttr.get(dyn, [dyn])
-                    flat_type = ir.MemRefType.get([pt_size], element_type, flat_layout)
+                    flat_type = ir.MemRefType.get([pt_size], element_type)
                     new_input_types.append(flat_type)
             else:
                 for t in inputs:
@@ -144,8 +158,7 @@ def transform_tf_mlir(content, arg_attributes=None):
                         total_elements = 1
                         for dim in t.shape:
                             total_elements *= dim
-                        flat_layout = ir.StridedLayoutAttr.get(dyn, [dyn])
-                        flat_type = ir.MemRefType.get([total_elements], t.element_type, flat_layout)
+                        flat_type = ir.MemRefType.get([total_elements], t.element_type)
                         new_input_types.append(flat_type)
                     else:
                         new_input_types.append(t)
@@ -153,8 +166,7 @@ def transform_tf_mlir(content, arg_attributes=None):
                 ret_total_elements = 1
                 for dim in ret_type.shape:
                     ret_total_elements *= dim
-                ret_flat_layout = ir.StridedLayoutAttr.get(dyn, [dyn])
-                ret_flat_type = ir.MemRefType.get([ret_total_elements], ret_type.element_type, ret_flat_layout)
+                ret_flat_type = ir.MemRefType.get([ret_total_elements], ret_type.element_type)
                 new_input_types.append(ret_flat_type)
             
             # Update function type
@@ -226,34 +238,51 @@ def transform_tf_mlir(content, arg_attributes=None):
             
             if return_op:
                 ret_val = return_op.operands[0]
-                ip_loop = ir.InsertionPoint(return_op)
                 
-                idx_type = ir.IndexType.get()
-                c0 = arith.ConstantOp(idx_type, 0, ip=ip_loop)
-                c1 = arith.ConstantOp(idx_type, 1, ip=ip_loop)
+                # The returned value could be a cast or direct alloc
+                alloc_0 = ret_val
+                if alloc_0.owner.name == "memref.cast":
+                    alloc_0 = alloc_0.owner.operands[0]
                 
-                current_ip = ip_loop
-                loop_indices = []
-                for dim in ret_shape:
-                    dim_val = arith.ConstantOp(idx_type, dim, ip=current_ip)
-                    for_op = scf.ForOp(c0.result, dim_val.result, c1.result, ip=current_ip)
-                    loop_indices.append(for_op.induction_variable)
+                # Find the linalg.copy that writes to alloc_0
+                copy_op = None
+                computation_buf = None
+                for op in list(entry_block.operations):
+                    if op.name == "linalg.copy" and op.operands[-1] == alloc_0:
+                        copy_op = op
+                        computation_buf = op.operands[0]
+                        break
+                        
+                if computation_buf:
+                    # Replace all uses of computation buffer with output destination.
+                    computation_buf.replace_all_uses_with(out_dest)
                     
-                    # Yield Op in loop body
-                    loop_body = for_op.regions[0].blocks[0]
-                    yield_ip = ir.InsertionPoint.at_block_begin(loop_body)
-                    scf.YieldOp([], ip=yield_ip)
-                    current_ip = ir.InsertionPoint(loop_body.operations[0])
+                    # Create void return before erasing old return
+                    func.ReturnOp([], ip=ir.InsertionPoint(return_op))
+                    return_op.operation.erase()
                     
-                # Innermost loop load and store
-                val = memref.LoadOp(ret_val, loop_indices, ip=current_ip)
-                memref.StoreOp(val.result, out_dest, loop_indices, ip=current_ip)
+                    # Erase copy_op
+                    copy_op.operation.erase()
+                    
+                    # Erase all remaining operations that use alloc_0 (e.g. memref.cast)
+                    for op in reversed(list(entry_block.operations)):
+                        if alloc_0 in op.operands:
+                            op.operation.erase()
+                            
+                    # Erase alloc_0
+                    if alloc_0.owner.name == "memref.alloc":
+                        alloc_0.owner.operation.erase()
+                        
+                    # Erase computation_buf
+                    if computation_buf.owner.name == "memref.alloc":
+                        computation_buf.owner.operation.erase()
                 
-                # Replace ReturnOp
-                func.ReturnOp([], ip=ip_loop)
-                return_op.operation.erase()
-                
-        return str(module)
+        flat_mlir = str(module)
+        if os.environ.get('TENSORFLOW_NPU_CODEGEN') == "True":
+            from Tensorflow.TensorFlowFrontend.tf_npu_codegen import compile_tf_to_npu_mlir
+            return compile_tf_to_npu_mlir(flat_mlir, arg_attributes)
+            
+        return flat_mlir
 
 # Global kernel counter for multi-kernel tracking (과제 2: Option B)
 _tf_kernel_counter = 0
