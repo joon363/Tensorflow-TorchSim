@@ -1,0 +1,123 @@
+root@09058bde5670:/workspace/PyTorchSim/Tensorflow/tests# python test_correctness.py 
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1780690878.250845   52681 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1780690878.588186   52681 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1780690880.046749   52681 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+E0000 00:00:1780690881.779451   52681 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+I0000 00:00:1780690881.876422   52681 service.cc:153] XLA service 0x62f220ae20d0 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1780690881.876459   52681 service.cc:161]   StreamExecutor [0]: Host, Default Version (Driver: 0.0.0; Runtime: 0.0.0; Toolkit: 0.0.0; DNN: 0.0.0)
+I0000 00:00:1780690882.279250   52681 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[2026-06-05 20:21:27.503] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/i7/ci7c3u2oysvhyzisnf35wbcxk6ovs7brgip35phllnhpxzjefxcq.py
+[2026-06-05 20:21:28.986] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [1/12] Vector Add 1D: PASSED
+[2026-06-05 20:21:34.091] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/n6/cn6e2qxpbypssuttmxmhg45gkfkjjffgxjcuhbslpkd7sdlkcpwb.py
+[2026-06-05 20:21:34.448] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [2/12] Matrix Add 2D: PASSED
+[2026-06-05 20:21:39.589] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/oo/cooh4rg2kktwnwuwra5dbw6h7pg2unywshpvjuaizbeyzxp2e24t.py
+[2026-06-05 20:21:39.933] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [3/12] Vector Mul 2D: PASSED
+[2026-06-05 20:21:45.063] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3i7xulpl5lnsalbzlxlp2xqbcjd3fnsysraz3ycjhenhsere4kk.py
+[2026-06-05 20:21:45.437] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [4/12] Matmul 32x32: PASSED 
+[2026-06-05 20:21:50.606] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3iqwhdgkfwe2tg2hvuxtxlc62kqjcgzlirr6qo5xch3acsgoy4l.py
+[2026-06-05 20:21:51.045] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [5/12] Linear Bias 32x32: PASSED
+I0000 00:00:1780690911.099981   52681 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+[2026-06-05 20:21:56.427] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/xf/cxfncwtc4vz2xdzoujuxt5bit6g3yuxch7csalsy6uyxrb7rbuka.py
+[2026-06-05 20:21:56.844] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [6/12] ReLU 32x32: PASSED   
+[2026-06-05 20:22:03.001] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/vo/cvo4nlaucnof2yhr4to2f6j4hh5nqnzbnrxztg7nabhsanj2zsqa.py
+[2026-06-05 20:22:03.361] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [7/12] GEMM (non-square Matmul 16x32x64): PASSED
+[2026-06-05 20:22:08.622] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/ox/coxqsq6jzs73qoki3ifxydb4qqhp7qo6g2bqp2vtffzaqvza42yg.py
+[2026-06-05 20:22:08.975] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [8/12] Conv2D 14x14x8 to 16: PASSED
+[2026-06-05 20:22:14.221] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3s/c3sd7dtucc7eow4w2qxu3escedelvivi4fj5mx3ydbiyiugzqam2.py
+[2026-06-05 20:22:14.568] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [9/12] Perceptron 8x32->16: PASSED
+[2026-06-05 20:22:19.699] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/5m/c5mk7iisk6zlzqvfbrzs7htzaanheoyglaw6dzwypbjnghxchhyz.py
+[2026-06-05 20:22:20.095] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [10/12] Sigmoid Linear 8x32->16: PASSED
+[2026-06-05 20:22:25.422] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/k4/ck4z3hareyeghxtzllxf2w4ydugehdfw2uwbitj6x2wygzxuuwgp.py
+[2026-06-05 20:22:25.811] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+Test [11/12] Large Matmul 64x128x32: PASSED
+[2026-06-05 20:22:32.028] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/zi/czixbfasxitooezcewf7ik4l7wgnzbijila3emunsgo5wvaz3toc.py
+[2026-06-05 20:22:32.448] [INFO] [simulator.simulator] [Spike] Running Spike simulator
+[Spike] Running simulation: 00:00z  0000000000000000 ra 00000000000107ee sp 0000003ffffff830 gp 0000000000012878
+tp 0000000000000000 t0 000000000000000f t1 00000000d1404a00 t2 0000003ffffff9f8
+s0 00000000d1409e00 s1 00000000d1409e00 a0 0000000000000000 a1 0000000000000000
+a2 0000000000000007 a3 000000000000000f a4 00000000d1409e00 a5 0000000500000000
+a6 0000000000000007 a7 00000000000000d6 s2 00000000d1400000 s3 0000000500000000
+s4 00000000d1409a00 s5 00000000d1409800 s6 00000000d1408a00 s7 00000000d1409400
+s8 00000000d1400400 s9 0000000000000000 sA 0000000000000000 sB 0000000000000000
+t3 00000000d1400800 t4 0000000000000000 t5 0000000000000000 t6 0000000000000000
+pc 0000000000010814 va/inst 0000000500000000 sr 8000000200006620
+User load segfault @ 0x0000000500000000
+[2026-06-05 20:22:32.472] [ERROR] [simulator.simulator] [Spike] Command failed with exit code 255
+Test [12/12] MLP 2-layer 8x32->64->16: XFAIL (known limitation)
+
+================ Summary: [11/12] Passed, [1] Known Limitations ================
+
+
+
+
+root@09058bde5670:/workspace/PyTorchSim/Tensorflow/tests# python test_timing.py
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1780691127.893783   54299 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1780691127.929346   54299 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1780691128.941275   54299 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+=====================================================================================
+         TIMING VERIFICATION: Native Torch vs TF NPU Codegen
+=====================================================================================
+E0000 00:00:1780691130.213652   54299 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+
+[Matmul 256x256]
+--- Running Torch Native Timing Simulation ---
+[2026-06-05 20:25:30.772] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/5l/c5ladu43a6dqhtbobkhsvtp3mfr4mpibbwrwf3sht6nj7uuldjff.py
+[2026-06-05 20:25:30.832] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:30.914] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202530_62e46ee5.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202530_62e46ee5.log
+--- Running TF NPU Codegen Timing Simulation ---
+I0000 00:00:1780691130.966219   54299 service.cc:153] XLA service 0x615778c4c830 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1780691130.966261   54299 service.cc:161]   StreamExecutor [0]: Host, Default Version (Driver: 0.0.0; Runtime: 0.0.0; Toolkit: 0.0.0; DNN: 0.0.0)
+I0000 00:00:1780691131.358880   54299 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[2026-06-05 20:25:37.057] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/hi/chi6neuzfsevmm2uvi6xmoapj3caw45yf44lrcwl2orwjd4ldlas.py
+[2026-06-05 20:25:37.100] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:37.175] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202537_35c763d8.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202537_35c763d8.log
+Matmul 256x256 -> Native Cycles: 2714, TF Cycles: 2716
+
+[Relu 32x32]
+--- Running Torch Native Timing Simulation ---
+[2026-06-05 20:25:37.206] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/xf/cxfncwtc4vz2xdzoujuxt5bit6g3yuxch7csalsy6uyxrb7rbuka.py
+[2026-06-05 20:25:37.241] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:37.265] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202537_4935db9a.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202537_4935db9a.log
+--- Running TF NPU Codegen Timing Simulation ---
+I0000 00:00:1780691137.308739   54299 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+[2026-06-05 20:25:42.270] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/xf/cxfncwtc4vz2xdzoujuxt5bit6g3yuxch7csalsy6uyxrb7rbuka.py
+[2026-06-05 20:25:42.318] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:42.338] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202542_d9526a64.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202542_d9526a64.log
+Relu 32x32 -> Native Cycles: 200, TF Cycles: 1
+
+
+[Dense Relu 32x32]
+--- Running Torch Native Timing Simulation ---
+[2026-06-05 20:25:42.367] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/vu/cvuwtbpdrjqlihdtd2obdqqwh72slederew6qvrckjextwa7dwtp.py
+[2026-06-05 20:25:42.400] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:42.422] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202542_9a358653.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202542_9a358653.log
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 20:25:47.705] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/vu/cvuwtbpdrjqlihdtd2obdqqwh72slederew6qvrckjextwa7dwtp.py
+[2026-06-05 20:25:47.748] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 20:25:47.771] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202547_33682761.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_202547_33682761.log
+Dense Relu 32x32 -> Native Cycles: 587, TF Cycles: 556
+
+SUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.
+root@09058bde5670:/workspace/PyTorchSim/Tensorflow/tests# 

@@ -253,6 +253,10 @@ def transform_tf_mlir(content, arg_attributes=None):
                         computation_buf = op.operands[0]
                         break
                         
+                if not computation_buf:
+                    # If there's no linalg.copy, the operation directly outputs to alloc_0.
+                    computation_buf = alloc_0
+                    
                 if computation_buf:
                     # Replace all uses of computation buffer with output destination.
                     computation_buf.replace_all_uses_with(out_dest)
@@ -261,18 +265,19 @@ def transform_tf_mlir(content, arg_attributes=None):
                     func.ReturnOp([], ip=ir.InsertionPoint(return_op))
                     return_op.operation.erase()
                     
-                    # Erase copy_op
-                    copy_op.operation.erase()
+                    if copy_op:
+                        # Erase copy_op
+                        copy_op.operation.erase()
                     
                     # Erase all remaining operations that use alloc_0 (e.g. memref.cast)
-                    for op in reversed(list(entry_block.operations)):
-                        if alloc_0 in op.operands:
-                            op.operation.erase()
+                    # if it's different from computation_buf
+                    if alloc_0 != computation_buf:
+                        for op in reversed(list(entry_block.operations)):
+                            if alloc_0 in op.operands:
+                                op.operation.erase()
+                        if alloc_0.owner.name == "memref.alloc":
+                            alloc_0.owner.operation.erase()
                             
-                    # Erase alloc_0
-                    if alloc_0.owner.name == "memref.alloc":
-                        alloc_0.owner.operation.erase()
-                        
                     # Erase computation_buf
                     if computation_buf.owner.name == "memref.alloc":
                         computation_buf.owner.operation.erase()

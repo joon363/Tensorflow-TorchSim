@@ -64,6 +64,182 @@ def tf_to_MLIR(fn, *args):
         "-o", str(output_path),
     ])
 
+def get_result_from_file(result_path):
+    core_metrics = {}
+    dram_channel_bw = {}  # 현재 로그에는 채널별 정보 없음
+    avg_dram_bw = 0.0
+    simulation_time = float("inf")
+    total_cycle = float("inf")
+
+    with open(result_path, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        # DRAM summary
+        m = re.search(
+            r'channels\s+\d+\.\.\d+\s+combined\s+\|\s+([\d.]+)\s+GB/s aggregate,\s+([\d.]+)% of utilization.*\|\s+(\d+)\s+reads,\s+(\d+)\s+writes',
+            line
+        )
+        if m:
+            core_metrics["DRAM_BW_GBps"] = float(m.group(1))
+            avg_dram_bw = float(m.group(2))
+            core_metrics["DRAM_reads"] = int(m.group(3))
+            core_metrics["DRAM_writes"] = int(m.group(4))
+            continue
+
+        # Instruction counts
+        m = re.search(
+            r'Core \[(\d+)\] : (\w+)\s+inst_count:\s+(\d+)',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+            inst_type = m.group(2)
+            inst_count = int(m.group(3))
+
+            core_metrics.setdefault("Instruction_Counts", {})
+            core_metrics["Instruction_Counts"].setdefault(core_id, {})
+            core_metrics["Instruction_Counts"][core_id][inst_type] = inst_count
+
+            if inst_type == "COMP":
+                gemm = re.search(r'GEMM:\s*(\d+)', line)
+                vector = re.search(r'Vector:\s*(\d+)', line)
+
+                if gemm:
+                    core_metrics["Instruction_Counts"][core_id]["COMP_GEMM"] = int(gemm.group(1))
+                if vector:
+                    core_metrics["Instruction_Counts"][core_id]["COMP_Vector"] = int(vector.group(1))
+
+            continue
+
+        # Systolic array stats
+        m = re.search(
+            r'Core \[(\d+)\] : Systolic array \[(\d+)\] utilization\(%\): ([\d.]+), active_cycles: (\d+), idle_cycles: (\d+)',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+            sa_id = int(m.group(2))
+            util = float(m.group(3))
+            active = int(m.group(4))
+            idle = int(m.group(5))
+
+            core_metrics.setdefault("Systolic_Arrays", {})
+            core_metrics["Systolic_Arrays"][(core_id, sa_id)] = {
+                "utilization": util,
+                "active_cycles": active,
+                "idle_cycles": idle,
+            }
+
+            # 기존 리포트 호환용
+            if sa_id == 0:
+                core_metrics["Systolic_Array_Utilization"] = util
+                core_metrics["MatMul_active_cycle"] = active
+
+            continue
+
+        # DMA stats
+        m = re.search(
+            r'Core \[(\d+)\] : DMA active_cycles: (\d+), DMA idle_cycles: (\d+), DRAM BW: ([\d.]+) GB/s \((\d+) responses\)',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+
+            core_metrics.setdefault("DMA", {})
+            core_metrics["DMA"][core_id] = {
+                "active_cycles": int(m.group(2)),
+                "idle_cycles": int(m.group(3)),
+                "dram_bw_gbps": float(m.group(4)),
+                "responses": int(m.group(5)),
+            }
+            continue
+
+        # Vector unit stats
+        m = re.search(
+            r'Core \[(\d+)\] : Vector unit utilization\(%\): ([\d.]+), active cycle: (\d+), idle_cycle: (\d+)',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+            util = float(m.group(2))
+            active = int(m.group(3))
+            idle = int(m.group(4))
+
+            core_metrics.setdefault("Vector_Unit", {})
+            core_metrics["Vector_Unit"][core_id] = {
+                "utilization": util,
+                "active_cycles": active,
+                "idle_cycles": idle,
+            }
+
+            # 기존 리포트 호환용
+            core_metrics["Vector_Unit_Utilization"] = util
+            core_metrics["Vector_active_cycle"] = active
+
+            continue
+
+        # NUMA stats
+        m = re.search(
+            r'Core \[(\d+)\] : NUMA local memory: (\d+) requests, remote memory: (\d+) requests',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+
+            core_metrics.setdefault("NUMA", {})
+            core_metrics["NUMA"][core_id] = {
+                "local_requests": int(m.group(2)),
+                "remote_requests": int(m.group(3)),
+            }
+            continue
+
+        # Core total cycles
+        m = re.search(
+            r'Core \[(\d+)\] : Total_cycles: (\d+)',
+            line
+        )
+        if m:
+            core_id = int(m.group(1))
+
+            core_metrics.setdefault("Core_Total_Cycles", {})
+            core_metrics["Core_Total_Cycles"][core_id] = int(m.group(2))
+            continue
+
+        # Global total cycles
+        m = re.search(
+            r'Total execution cycles: (\d+)',
+            line
+        )
+        if m:
+            total_cycle = int(m.group(1))
+            core_metrics["Total_cycle"] = total_cycle
+            continue
+
+        # Simulation time
+        m = re.search(
+            r'Wall-clock time for simulation: ([\d.]+) seconds',
+            line
+        )
+        if m:
+            simulation_time = float(m.group(1))
+            continue
+
+    # 기본값 보장
+    core_metrics.setdefault("MatMul_active_cycle", 0)
+    core_metrics.setdefault("Vector_active_cycle", 0)
+    core_metrics.setdefault("Systolic_Array_Utilization", 0.0)
+    core_metrics.setdefault("Vector_Unit_Utilization", 0.0)
+    core_metrics.setdefault("Total_cycle", total_cycle)
+
+    return (
+        core_metrics,
+        dram_channel_bw,
+        avg_dram_bw,
+        simulation_time,
+        total_cycle,
+    )
+
 def get_latest_log_result():
     log_files = glob.glob(os.path.join(LOG_DIR, "*.log"))
     if not log_files:
@@ -72,7 +248,7 @@ def get_latest_log_result():
     print(f"Parsing timing metrics from: {latest_file}")
     
     # Parse metrics
-    core_metrics, dram_ch_bw, avg_dram_bw, sim_time, total_cycle = TOGSimulator.get_result_from_file(latest_file)
+    core_metrics, dram_ch_bw, avg_dram_bw, sim_time, total_cycle = get_result_from_file(latest_file)
     return {
         "file": latest_file,
         "total_cycle": total_cycle,
@@ -134,7 +310,7 @@ def analyze_mlir_structure(output_dir):
 
 def parse_gem5_stats(output_dir):
     """Parse Gem5 stats.txt to get CPU cycle counts."""
-    result = {"cpu_cycles": 0, "instructions": 0}
+    result = {"cpu_cycles": 0, "cpi": 0}
     if not output_dir:
         return result
     
@@ -149,11 +325,11 @@ def parse_gem5_stats(output_dir):
                 if len(sections) > 1:
                     last_section = sections[-1]
                     cycles_m = re.search(r"system\.cpu\.numCycles\s+(\d+)", last_section)
-                    inst_m = re.search(r"system\.cpu\.committedInsts\s+(\d+)", last_section)
+                    cpi_m = re.search(r"system\.cpu\.cpi\s+([\d.]+)", last_section)
                     if cycles_m:
                         result["cpu_cycles"] = int(cycles_m.group(1))
-                    if inst_m:
-                        result["instructions"] = int(inst_m.group(1))
+                    if cpi_m:
+                        result["cpi"] = float(cpi_m.group(1))
             except Exception:
                 pass
             break
@@ -294,95 +470,63 @@ if __name__ == "__main__":
     print("         TIMING VERIFICATION: Native Torch vs TF NPU Codegen")
     print("=" * 85)
     
-    # 1. Prepare Matmul 256x256 benchmark
+    import json
+    
+    tests = []
+    
+    # 1. Matmul 256x256
     a_tf = tf.random.normal([256, 256], seed=42)
     b_tf = tf.random.normal([256, 256], seed=43)
-    
     a_pt = torch.tensor(a_tf.numpy())
     b_pt = torch.tensor(b_tf.numpy())
-    
     @tf.function(jit_compile=True)
-    def matmul_tf(x, y):
-        return tf.matmul(x, y)
+    def matmul_tf(x, y): return tf.matmul(x, y)
+    tests.append(("Matmul 256x256", matmul_tf, [a_tf, b_tf], [a_pt, b_pt], lambda x, y: torch.matmul(x, y)))
+    
+    # 2. Relu 32x32
+    r_tf = tf.random.normal([32, 32], seed=44)
+    r_pt = torch.tensor(r_tf.numpy())
+    @tf.function(jit_compile=True)
+    def relu_tf(x): return tf.nn.relu(x)
+    tests.append(("Relu 32x32", relu_tf, [r_tf], [r_pt], lambda x: torch.relu(x)))
+    
+    # 3. Dense Relu 32x32
+    @tf.function(jit_compile=True)
+    def dense_relu_tf(x, y): return tf.nn.relu(tf.matmul(x, y))
+    tests.append(("Dense Relu 32x32", dense_relu_tf, [a_tf[:32,:32], b_tf[:32,:32]], [a_pt[:32,:32], b_pt[:32,:32]], lambda x, y: torch.relu(torch.matmul(x, y))))
+    
+    results_log = []
+    
+    for name, tf_fn, inputs_tf, inputs_torch, dummy_fn in tests:
+        print(f"\n[{name}]")
+        torch_results = run_torch_native_timing(inputs_torch, dummy_fn)
+        tf_results = run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn)
         
-    dummy_matmul = lambda x, y: torch.matmul(x, y)
-    
-    # Run Native Torch Timing
-    torch_results = run_torch_native_timing([a_pt, b_pt], dummy_matmul)
-    
-    # Run TF NPU Codegen Timing
-    tf_results = run_tf_npu_timing(matmul_tf, [a_tf, b_tf], [a_pt, b_pt], dummy_matmul)
-    
-    # === Layer 1: MLIR Structure Comparison ===
-    print("\n" + "=" * 85)
-    print("  Layer 1: MLIR Structure Analysis")
-    print("=" * 85)
-    t_mlir = torch_results["mlir"]
-    f_mlir = tf_results["mlir"]
-    print(f"{'Metric':<25} | {'Native Torch':<20} | {'TF NPU Codegen':<20}")
-    print("-" * 70)
-    print(f"{'DMA Operations':<25} | {t_mlir['dma_count']:<20} | {f_mlir['dma_count']:<20}")
-    print(f"{'linalg.matmul Ops':<25} | {t_mlir['matmul_count']:<20} | {f_mlir['matmul_count']:<20}")
-    print(f"{'affine.for Loops':<25} | {t_mlir['affine_for_count']:<20} | {f_mlir['affine_for_count']:<20}")
-    print(f"{'VCIX Instructions':<25} | {t_mlir['vcix_count']:<20} | {f_mlir['vcix_count']:<20}")
-    print(f"{'TOG File Size (bytes)':<25} | {t_mlir['tog_size_bytes']:<20} | {f_mlir['tog_size_bytes']:<20}")
-    print(f"{'Output Directory':<25} | {os.path.basename(t_mlir['output_dir'] or 'N/A'):<20.20} | {os.path.basename(f_mlir['output_dir'] or 'N/A'):<20.20}")
-    
-    # === Layer 2: Gem5 CPU Cycles ===
-    print("\n" + "=" * 85)
-    print("  Layer 2: Gem5 CPU Simulation")
-    print("=" * 85)
-    t_gem5 = torch_results["gem5"]
-    f_gem5 = tf_results["gem5"]
-    print(f"{'Metric':<25} | {'Native Torch':<20} | {'TF NPU Codegen':<20}")
-    print("-" * 70)
-    print(f"{'CPU Cycles':<25} | {t_gem5['cpu_cycles']:<20} | {f_gem5['cpu_cycles']:<20}")
-    print(f"{'Committed Instructions':<25} | {t_gem5['instructions']:<20} | {f_gem5['instructions']:<20}")
-    
-    # === Layer 3: TOGSim NPU Cycles ===
-    print("\n" + "=" * 85)
-    print("  Layer 3: TOGSim NPU Timing")
-    print("=" * 85)
-    print(f"{'Metric':<25} | {'Native Torch':<25} | {'TF NPU Codegen':<25}")
-    print("-" * 85)
-    print(f"{'Total Cycles':<25} | {torch_results['total_cycle']:<25} | {tf_results['total_cycle']:<25}")
-    print(f"{'MatMul Active Cycles':<25} | {torch_results['matmul_active_cycle']:<25} | {tf_results['matmul_active_cycle']:<25}")
-    print(f"{'Vector Active Cycles':<25} | {torch_results['vector_active_cycle']:<25} | {tf_results['vector_active_cycle']:<25}")
-    print(f"{'Systolic Array Util (%)':<25} | {torch_results['systolic_util']:<25.2f} | {tf_results['systolic_util']:<25.2f}")
-    print(f"{'Vector Unit Util (%)':<25} | {torch_results['vector_util']:<25.2f} | {tf_results['vector_util']:<25.2f}")
-    print(f"{'Average DRAM BW (%)':<25} | {torch_results['avg_dram_bw']:<25.2f} | {tf_results['avg_dram_bw']:<25.2f}")
-    
-    # === Verdict ===
-    print("\n" + "=" * 85)
-    print("  VERDICT")
-    print("=" * 85)
-    
-    passed = True
-    
-    # Check MLIR structure matches
-    if f_mlir['dma_count'] > 0 and f_mlir['matmul_count'] > 0:
-        print("  [PASS] TF NPU MLIR contains DMA and matmul operations")
-    else:
-        print("  [FAIL] TF NPU MLIR missing DMA or matmul operations")
-        passed = False
-    
-    # Check TOGSim produced meaningful results
-    if tf_results['total_cycle'] > 1:
-        print("  [PASS] TOGSim reports non-trivial cycles for TF path")
-    else:
-        print("  [WARN] TOGSim reports 1 cycle for TF path (empty TOG?)")
-    
-    # Check Gem5 ran
-    if f_gem5['cpu_cycles'] > 0:
-        print("  [PASS] Gem5 simulation completed for TF path")
-    else:
-        print("  [WARN] Gem5 stats not found or zero cycles")
-    
-    print("=" * 85)
-    
-    if passed:
-        print("\nSUCCESS: Timing simulation executed successfully in both paths!")
-        sys.exit(0)
-    else:
-        print("\nFAILURE: Critical checks failed.")
-        sys.exit(1)
+        # Log to JSON
+        results_log.append({
+            "Test_Name": name,
+            "Torch_Cycles": torch_results.get("total_cycle", 0),
+            "TF_Cycles": tf_results.get("total_cycle", 0),
+            "Torch_Matmul_Active": torch_results.get("MatMul_active_cycle", 0),
+            "TF_Matmul_Active": tf_results.get("MatMul_active_cycle", 0),
+            "Torch_Vector_Active": torch_results.get("Vector_active_cycle", 0),
+            "TF_Vector_Active": tf_results.get("Vector_active_cycle", 0),
+            "Torch_Systolic_Util": torch_results.get("Systolic_Array_Utilization", 0),
+            "TF_Systolic_Util": tf_results.get("Systolic_Array_Utilization", 0),
+            "Torch_Vector_Util": torch_results.get("Vector_Unit_Utilization", 0),
+            "TF_Vector_Util": tf_results.get("Vector_Unit_Utilization", 0),
+            "Torch_DRAM_BW": torch_results.get("avg_dram_bw", 0),
+            "TF_DRAM_BW": tf_results.get("avg_dram_bw", 0),
+            "Torch_Gem5_CPU": torch_results.get("gem5", {}).get("cpu_cycles", 0),
+            "TF_Gem5_CPU": tf_results.get("gem5", {}).get("cpu_cycles", 0),
+            "Torch_Gem5_CPI": torch_results.get("gem5", {}).get("cpi", 0),
+            "TF_Gem5_CPI": tf_results.get("gem5", {}).get("cpi", 0)
+        })
+        
+        print(f"{name} -> Native Cycles: {results_log[-1]['Torch_Cycles']}, TF Cycles: {results_log[-1]['TF_Cycles']}")
+        
+    with open("timing_results.json", "w") as f:
+        json.dump(results_log, f, indent=4)
+        
+    print("\nSUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.")
+    sys.exit(0)

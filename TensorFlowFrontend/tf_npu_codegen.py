@@ -575,21 +575,33 @@ def compile_tf_to_npu_mlir(tf_mlir_content, arg_attributes):
         body_lines.append(line)
         
     # Reassemble module
+    # Reassemble module
     module_header = "module {"
     
     # Separate alias definitions (e.g., #t_map0) from other global declarations (e.g., memref.global)
     # as MLIR requires symbol aliases to be defined BEFORE the module block.
     aliases = []
     other_globals = []
+    
+    # Extract original globals and aliases from the original MLIR
+    for line in lines:
+        line_stripped = line.strip()
+        if line_stripped.startswith("memref.global ") or line_stripped.startswith("func.func private "):
+            other_globals.append(line)
+        elif line_stripped.startswith("#") or line_stripped.startswith("!"):
+            aliases.append(line)
+            
     for decl in global_decls:
         for line in decl.splitlines():
             line_stripped = line.strip()
             if not line_stripped:
                 continue
             if line_stripped.startswith("#") or line_stripped.startswith("!"):
-                aliases.append(line)
+                if line not in aliases:
+                    aliases.append(line)
             else:
-                other_globals.append(line)
+                if line not in other_globals:
+                    other_globals.append(line)
                 
     alias_section = "\n".join(aliases)
     global_section = "\n".join(other_globals)
