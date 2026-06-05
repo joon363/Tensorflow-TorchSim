@@ -3,17 +3,34 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_results():
-    if not os.path.exists("timing_results.json"):
-        print("Error: timing_results.json not found.")
+def plot_results(silent=False):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.join(base_dir, "outputs")
+    json_path = os.path.join(out_dir, "timing_results.json")
+    
+    if not os.path.exists(json_path):
+        if not silent: print(f"Error: {json_path} not found.")
         return
         
-    with open("timing_results.json", "r") as f:
+    with open(json_path, "r") as f:
         data = json.load(f)
         
     if not data:
-        print("Error: JSON is empty.")
+        if not silent: print("Error: JSON is empty.")
         return
+
+    # Filter out cases where both cycles are 1
+    filtered_data = []
+    for item in data:
+        if item.get("Torch_Cycles", 0) == 1 and item.get("TF_Cycles", 0) == 1:
+            continue
+        filtered_data.append(item)
+        
+    if not filtered_data:
+        if not silent: print("Error: Filtered JSON is empty (all cycles are 1).")
+        return
+        
+    data = filtered_data
 
     test_names = [item["Test_Name"] for item in data]
     x = np.arange(len(test_names))
@@ -35,7 +52,7 @@ def plot_results():
     ax1.legend()
     
     fig.tight_layout()
-    plt.savefig("togsim_cycles_comparison.png", dpi=300)
+    plt.savefig(os.path.join(out_dir, "togsim_cycles_comparison.png"), dpi=300)
     plt.close()
     
     # 2. Hardware Utilization Metrics (Systolic Array, Vector, DRAM BW)
@@ -68,10 +85,11 @@ def plot_results():
     ax3.set_xticklabels(test_names, rotation=45, ha='right')
     
     fig.tight_layout()
-    plt.savefig("hardware_util_comparison.png", dpi=300)
+    plt.savefig(os.path.join(out_dir, "hardware_util_comparison.png"), dpi=300)
     plt.close()
     
-    print("Successfully generated 'togsim_cycles_comparison.png' and 'hardware_util_comparison.png'.")
+    if not silent:
+        print("Successfully generated 'togsim_cycles_comparison.png' and 'hardware_util_comparison.png'.")
 
 if __name__ == "__main__":
     plot_results()

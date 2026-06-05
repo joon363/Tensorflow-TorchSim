@@ -8,6 +8,7 @@ import shutil
 import glob
 import re
 import time
+import json
 
 base_dir = os.environ.get('TORCHSIM_DIR', default='/workspace/PyTorchSim')
 sys.path.append(base_dir)
@@ -451,58 +452,78 @@ def run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn):
     device = torch.device("npu:0")
     torch_inputs = [t.to(device) for t in inputs_torch]
     
-    opt_fn = torch.compile(dynamic=False)(dummy_fn)
-    npu_out = opt_fn(*torch_inputs)
-    
-    sim = torch.npu.get_tog_simulator()
-    if sim:
-        sim.until()
-    
-    output_dir = find_latest_output_dir(t_before)
-    togsim = get_latest_log_result()
-    mlir_info = analyze_mlir_structure(output_dir)
-    gem5_info = parse_gem5_stats(output_dir)
-    
-    return {**togsim, "mlir": mlir_info, "gem5": gem5_info}
+    try:
+        opt_fn = torch.compile(dynamic=False)(dummy_fn)
+        npu_out = opt_fn(*torch_inputs)
+        
+        sim = torch.npu.get_tog_simulator()
+        if sim:
+            sim.until()
+            
+        output_dir = find_latest_output_dir(t_before)
+        if not output_dir:
+            return {}
+            
+        togsim = get_latest_log_result()
+        mlir_info = analyze_mlir_structure(output_dir)
+        gem5_info = parse_gem5_stats(output_dir)
+        
+        return {**togsim, "mlir": mlir_info, "gem5": gem5_info}
+    except Exception as e:
+        print(f"Exception during run_tf_npu_timing: {str(e)}", file=sys.stderr)
+        return {}
 
-if __name__ == "__main__":
-    print("=" * 85)
-    print("         TIMING VERIFICATION: Native Torch vs TF NPU Codegen")
-    print("=" * 85)
-    
-    import json
-    
-    tests = []
-    
-    # 1. Matmul 256x256
-    a_tf = tf.random.normal([256, 256], seed=42)
-    b_tf = tf.random.normal([256, 256], seed=43)
-    a_pt = torch.tensor(a_tf.numpy())
-    b_pt = torch.tensor(b_tf.numpy())
-    @tf.function(jit_compile=True)
-    def matmul_tf(x, y): return tf.matmul(x, y)
-    tests.append(("Matmul 256x256", matmul_tf, [a_tf, b_tf], [a_pt, b_pt], lambda x, y: torch.matmul(x, y)))
-    
-    # 2. Relu 32x32
-    r_tf = tf.random.normal([32, 32], seed=44)
-    r_pt = torch.tensor(r_tf.numpy())
-    @tf.function(jit_compile=True)
-    def relu_tf(x): return tf.nn.relu(x)
-    tests.append(("Relu 32x32", relu_tf, [r_tf], [r_pt], lambda x: torch.relu(x)))
-    
-    # 3. Dense Relu 32x32
-    @tf.function(jit_compile=True)
-    def dense_relu_tf(x, y): return tf.nn.relu(tf.matmul(x, y))
-    tests.append(("Dense Relu 32x32", dense_relu_tf, [a_tf[:32,:32], b_tf[:32,:32]], [a_pt[:32,:32], b_pt[:32,:32]], lambda x, y: torch.relu(torch.matmul(x, y))))
+from tests_common import get_all_tests
+
+def run_all_timing_tests(tests=None, silent=False):
+    if tests is None:
+        tests = get_all_tests()
+        
+    if not silent:
+        print("=" * 85)
+        print("         TIMING VERIFICATION: Native Torch vs TF NPU Codegen")
+        print("=" * 85)
     
     results_log = []
     
     for name, tf_fn, inputs_tf, inputs_torch, dummy_fn in tests:
-        print(f"\n[{name}]")
-        torch_results = run_torch_native_timing(inputs_torch, dummy_fn)
+        if not silent: print(f"\n[{name}]")
+        
+        # 1) Run Native PyTorch Path
+        if not silent: print("--- Running Torch Native Timing Simulation ---")
+        os.environ["TORCHSIM_TIMING_MODE"] = "True"
+        if "TENSORFLOW_NPU_CODEGEN" in os.environ:
+            del os.environ["TENSORFLOW_NPU_CODEGEN"]
+            
+        torch_results = run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn)
+        
+        # 2) Run TF NPU Codegen Path
+        if not silent: print("--- Running TF NPU Codegen Timing Simulation ---")
+        os.environ["TENSORFLOW_NPU_CODEGEN"] = "True"
+        
         tf_results = run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn)
         
-        # Log to JSON
+        # Extract basic metrics
+        torch_cyc = torch_results.get("total_cycle", 0)
+        tf_cyc = tf_results.get("total_cycle", 0)
+        
+        if not silent: print(f"{name} -> Native Cycles: {torch_cyc}, TF Cycles: {tf_cyc}")
+        
+        # System utilization data for plotting
+        def extract_utils(res):
+            sys_util = 0.0
+            vec_util = 0.0
+            dram_bw = 0.0
+            if "gem5" in res:
+                sys_util = res["gem5"].get("Systolic_Array_Utilization", 0.0)
+            if "mlir" in res:
+                vec_util = res["mlir"].get("vpu_count", 0.0)
+            dram_bw = res.get("dram_read", 0) + res.get("dram_write", 0)
+            return sys_util, vec_util, dram_bw
+            
+        t_sys, t_vec, t_dram = extract_utils(torch_results)
+        f_sys, f_vec, f_dram = extract_utils(tf_results)
+        
         results_log.append({
             "Test_Name": name,
             "Torch_Cycles": torch_results.get("total_cycle", 0),
@@ -523,10 +544,19 @@ if __name__ == "__main__":
             "TF_Gem5_CPI": tf_results.get("gem5", {}).get("cpi", 0)
         })
         
-        print(f"{name} -> Native Cycles: {results_log[-1]['Torch_Cycles']}, TF Cycles: {results_log[-1]['TF_Cycles']}")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.join(base_dir, "outputs")
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
         
-    with open("timing_results.json", "w") as f:
+    json_path = os.path.join(out_dir, "timing_results.json")
+    with open(json_path, "w") as f:
         json.dump(results_log, f, indent=4)
         
-    print("\nSUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.")
-    sys.exit(0)
+    if not silent:
+        print("\nSUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.")
+        
+    return results_log
+
+if __name__ == "__main__":
+    run_all_timing_tests()
