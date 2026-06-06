@@ -24,6 +24,8 @@ def plot_results(silent=False):
     for item in data:
         if item.get("Torch_Cycles", 0) == 1 and item.get("TF_Cycles", 0) == 1:
             continue
+        if item.get("Torch_Cycles", 0) == 0 and item.get("TF_Cycles", 0) == 0:
+            continue
         filtered_data.append(item)
         
     if not filtered_data:

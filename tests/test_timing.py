@@ -154,6 +154,7 @@ def get_result_from_file(result_path):
                 "dram_bw_gbps": float(m.group(4)),
                 "responses": int(m.group(5)),
             }
+            core_metrics["avg_dram_bw"] = float(m.group(4))
             continue
 
         # Vector unit stats
@@ -246,7 +247,6 @@ def get_latest_log_result():
     if not log_files:
         raise RuntimeError("No log files found in " + LOG_DIR)
     latest_file = max(log_files, key=os.path.getmtime)
-    print(f"Parsing timing metrics from: {latest_file}")
     
     # Parse metrics
     core_metrics, dram_ch_bw, avg_dram_bw, sim_time, total_cycle = get_result_from_file(latest_file)
@@ -257,7 +257,7 @@ def get_latest_log_result():
         "vector_active_cycle": core_metrics.get("Vector_active_cycle", 0),
         "systolic_util": core_metrics.get("Systolic_Array_Utilization", 0.0),
         "vector_util": core_metrics.get("Vector_Unit_Utilization", 0.0),
-        "avg_dram_bw": avg_dram_bw
+        "avg_dram_bw": core_metrics.get("avg_dram_bw", avg_dram_bw)
     }
 
 def find_latest_output_dir(after_time):
@@ -462,16 +462,15 @@ def run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn):
             
         output_dir = find_latest_output_dir(t_before)
         if not output_dir:
-            return {}
+            return {"error": "No output dir"}
             
         togsim = get_latest_log_result()
         mlir_info = analyze_mlir_structure(output_dir)
         gem5_info = parse_gem5_stats(output_dir)
         
-        return {**togsim, "mlir": mlir_info, "gem5": gem5_info}
+        return {**togsim, "mlir": mlir_info, "gem5": gem5_info, "error": None}
     except Exception as e:
-        print(f"Exception during run_tf_npu_timing: {str(e)}", file=sys.stderr)
-        return {}
+        return {"error": str(e)}
 
 from tests_common import get_all_tests
 
@@ -480,17 +479,15 @@ def run_all_timing_tests(tests=None, silent=False):
         tests = get_all_tests()
         
     if not silent:
-        print("=" * 85)
-        print("         TIMING VERIFICATION: Native Torch vs TF NPU Codegen")
-        print("=" * 85)
+        pass # The integrated runner handles the header
     
     results_log = []
+    passed = 0
+    failed = 0
     
-    for name, tf_fn, inputs_tf, inputs_torch, dummy_fn in tests:
-        if not silent: print(f"\n[{name}]")
+    for i, (name, tf_fn, inputs_tf, inputs_torch, dummy_fn) in enumerate(tests):
         
         # 1) Run Native PyTorch Path
-        if not silent: print("--- Running Torch Native Timing Simulation ---")
         os.environ["TORCHSIM_TIMING_MODE"] = "True"
         if "TENSORFLOW_NPU_CODEGEN" in os.environ:
             del os.environ["TENSORFLOW_NPU_CODEGEN"]
@@ -498,44 +495,38 @@ def run_all_timing_tests(tests=None, silent=False):
         torch_results = run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn)
         
         # 2) Run TF NPU Codegen Path
-        if not silent: print("--- Running TF NPU Codegen Timing Simulation ---")
         os.environ["TENSORFLOW_NPU_CODEGEN"] = "True"
         
         tf_results = run_tf_npu_timing(tf_fn, inputs_tf, inputs_torch, dummy_fn)
+        
+        # Check for errors
+        torch_err = torch_results.get("error") is not None
+        tf_err = tf_results.get("error") is not None
+        
+        if torch_err or tf_err:
+            print(f"Test [{i+1}/{len(tests)}] {name}: FAILED (Compilation or Execution Error)")
+            failed += 1
+            continue
+            
+        passed += 1
+        print(f"Test [{i+1}/{len(tests)}] {name}: PASSED")
         
         # Extract basic metrics
         torch_cyc = torch_results.get("total_cycle", 0)
         tf_cyc = tf_results.get("total_cycle", 0)
         
-        if not silent: print(f"{name} -> Native Cycles: {torch_cyc}, TF Cycles: {tf_cyc}")
-        
-        # System utilization data for plotting
-        def extract_utils(res):
-            sys_util = 0.0
-            vec_util = 0.0
-            dram_bw = 0.0
-            if "gem5" in res:
-                sys_util = res["gem5"].get("Systolic_Array_Utilization", 0.0)
-            if "mlir" in res:
-                vec_util = res["mlir"].get("vpu_count", 0.0)
-            dram_bw = res.get("dram_read", 0) + res.get("dram_write", 0)
-            return sys_util, vec_util, dram_bw
-            
-        t_sys, t_vec, t_dram = extract_utils(torch_results)
-        f_sys, f_vec, f_dram = extract_utils(tf_results)
-        
         results_log.append({
             "Test_Name": name,
             "Torch_Cycles": torch_results.get("total_cycle", 0),
             "TF_Cycles": tf_results.get("total_cycle", 0),
-            "Torch_Matmul_Active": torch_results.get("MatMul_active_cycle", 0),
-            "TF_Matmul_Active": tf_results.get("MatMul_active_cycle", 0),
-            "Torch_Vector_Active": torch_results.get("Vector_active_cycle", 0),
-            "TF_Vector_Active": tf_results.get("Vector_active_cycle", 0),
-            "Torch_Systolic_Util": torch_results.get("Systolic_Array_Utilization", 0),
-            "TF_Systolic_Util": tf_results.get("Systolic_Array_Utilization", 0),
-            "Torch_Vector_Util": torch_results.get("Vector_Unit_Utilization", 0),
-            "TF_Vector_Util": tf_results.get("Vector_Unit_Utilization", 0),
+            "Torch_Matmul_Active": torch_results.get("matmul_active_cycle", 0),
+            "TF_Matmul_Active": tf_results.get("matmul_active_cycle", 0),
+            "Torch_Vector_Active": torch_results.get("vector_active_cycle", 0),
+            "TF_Vector_Active": tf_results.get("vector_active_cycle", 0),
+            "Torch_Systolic_Util": torch_results.get("systolic_util", 0),
+            "TF_Systolic_Util": tf_results.get("systolic_util", 0),
+            "Torch_Vector_Util": torch_results.get("vector_util", 0),
+            "TF_Vector_Util": tf_results.get("vector_util", 0),
             "Torch_DRAM_BW": torch_results.get("avg_dram_bw", 0),
             "TF_DRAM_BW": tf_results.get("avg_dram_bw", 0),
             "Torch_Gem5_CPU": torch_results.get("gem5", {}).get("cpu_cycles", 0),
@@ -553,8 +544,7 @@ def run_all_timing_tests(tests=None, silent=False):
     with open(json_path, "w") as f:
         json.dump(results_log, f, indent=4)
         
-    if not silent:
-        print("\nSUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.")
+    print(f"\n================ Summary: [{passed}/{len(tests)}] Passed, [{failed}] Failed ================")
         
     return results_log
 

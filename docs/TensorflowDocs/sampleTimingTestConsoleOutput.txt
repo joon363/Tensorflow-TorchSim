@@ -1,0 +1,327 @@
+=====================================================================================
+         TIMING VERIFICATION: Native Torch vs TF NPU Codegen
+=====================================================================================
+
+[Vector Add 1D]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+I0000 00:00:1780702503.975846   90032 service.cc:153] XLA service 0x614c8b2cee30 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1780702503.975888   90032 service.cc:161]   StreamExecutor [0]: Host, Default Version (Driver: 0.0.0; Runtime: 0.0.0; Toolkit: 0.0.0; DNN: 0.0.0)
+I0000 00:00:1780702504.284722   90032 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[2026-06-05 23:35:09.249] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/62/c62bu3dldzeppzvqoktdpowh2va444ilw6p523ntwxa5x7blxttx.py
+[2026-06-05 23:35:09.292] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:09.314] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233509_45fcb49f.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233509_45fcb49f.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:14.101] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/wl/cwlcrgsdpdwldx5lj53whntmmvratlu525upotg6dfxh5kipcpy4.py
+[2026-06-05 23:35:14.140] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:14.160] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233514_280d3eec.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233514_280d3eec.log
+Vector Add 1D -> Native Cycles: 1, TF Cycles: 1
+
+[Matrix Add 2D]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:19.248] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/n6/cn6e2qxpbypssuttmxmhg45gkfkjjffgxjcuhbslpkd7sdlkcpwb.py
+[2026-06-05 23:35:19.296] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:19.317] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233519_46e373a6.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233519_46e373a6.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:24.332] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/n6/cn6e2qxpbypssuttmxmhg45gkfkjjffgxjcuhbslpkd7sdlkcpwb.py
+[2026-06-05 23:35:24.370] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:24.389] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233524_f400f0fe.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233524_f400f0fe.log
+Matrix Add 2D -> Native Cycles: 1, TF Cycles: 1
+
+[Vector Mul 2D]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:29.299] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/oo/cooh4rg2kktwnwuwra5dbw6h7pg2unywshpvjuaizbeyzxp2e24t.py
+[2026-06-05 23:35:29.338] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:29.357] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233529_da573fb1.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233529_da573fb1.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:34.316] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/oo/cooh4rg2kktwnwuwra5dbw6h7pg2unywshpvjuaizbeyzxp2e24t.py
+[2026-06-05 23:35:34.358] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:34.380] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233534_10ed4ad9.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233534_10ed4ad9.log
+Vector Mul 2D -> Native Cycles: 1, TF Cycles: 1
+
+[Matmul 32x32]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:39.212] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3i7xulpl5lnsalbzlxlp2xqbcjd3fnsysraz3ycjhenhsere4kk.py
+[2026-06-05 23:35:39.250] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:39.272] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233539_6d78ac0e.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233539_6d78ac0e.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:44.017] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3i7xulpl5lnsalbzlxlp2xqbcjd3fnsysraz3ycjhenhsere4kk.py
+[2026-06-05 23:35:44.057] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:44.080] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233544_0ed6a1e3.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233544_0ed6a1e3.log
+Matmul 32x32 -> Native Cycles: 515, TF Cycles: 515
+
+[Linear Bias 32x32]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:48.926] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3iqwhdgkfwe2tg2hvuxtxlc62kqjcgzlirr6qo5xch3acsgoy4l.py
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:46:7: error: Unexpected dram buffer argument: %9 = "memref.reinterpret_cast"(%8) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<32x32xf32, 1>, memref<1024xf32>, memref<1xi32> {dram_stride = [32, 1], sram_stride = [1, 32], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:46:7: note: see current operation: "memref.dma_start"(%12, %4, %4, %9, %29, %2, %13, %4, %3, %3) {dram_stride = [32, 1], padding = 0 : i64, sram_stride = [1, 32]} : (memref<32x32xf32, 1>, index, index, memref<1024xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:69:9: error: Unexpected dram buffer argument: %18 = "memref.reinterpret_cast"(%16) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+        memref.dma_start %flat_alloc_3_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<1024xf32>, memref<512xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:69:9: note: see current operation: "memref.dma_start"(%18, %arg4, %23, %4, %0, %20, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<1024xf32>, index, memref<512xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:70:9: error: Unexpected dram buffer argument: %19 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<1024xf32>, memref<512xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:70:9: note: see current operation: "memref.dma_start"(%19, %arg4, %24, %4, %0, %21, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<1024xf32>, index, memref<512xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x23c): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x244): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x24c): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:35:54.026] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3i/c3iqwhdgkfwe2tg2hvuxtxlc62kqjcgzlirr6qo5xch3acsgoy4l.py
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:46:7: error: Unexpected dram buffer argument: %9 = "memref.reinterpret_cast"(%8) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<32x32xf32, 1>, memref<1024xf32>, memref<1xi32> {dram_stride = [32, 1], sram_stride = [1, 32], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:46:7: note: see current operation: "memref.dma_start"(%12, %4, %4, %9, %29, %2, %13, %4, %3, %3) {dram_stride = [32, 1], padding = 0 : i64, sram_stride = [1, 32]} : (memref<32x32xf32, 1>, index, index, memref<1024xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:69:9: error: Unexpected dram buffer argument: %18 = "memref.reinterpret_cast"(%16) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+        memref.dma_start %flat_alloc_3_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<1024xf32>, memref<512xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:69:9: note: see current operation: "memref.dma_start"(%18, %arg4, %23, %4, %0, %20, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<1024xf32>, index, memref<512xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:70:9: error: Unexpected dram buffer argument: %19 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 1024>, static_strides = array<i64: 1>}> : (memref<32x32xf32>) -> memref<1024xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<1024xf32>, memref<512xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv.mlir:70:9: note: see current operation: "memref.dma_start"(%19, %arg4, %24, %4, %0, %21, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<1024xf32>, index, memref<512xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x23c): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x244): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/cwqr4zauhgh/ccwqr4zauhghdgzjolkzpskeivkry67seko3ikmn2nc6bdr3xwuv_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x24c): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+Linear Bias 32x32 -> Native Cycles: 0, TF Cycles: 0
+
+[ReLU 32x32]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+I0000 00:00:1780702554.130367   90032 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+[2026-06-05 23:35:58.959] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/xf/cxfncwtc4vz2xdzoujuxt5bit6g3yuxch7csalsy6uyxrb7rbuka.py
+[2026-06-05 23:35:58.997] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:35:59.017] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233558_44058259.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233558_44058259.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:03.881] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/xf/cxfncwtc4vz2xdzoujuxt5bit6g3yuxch7csalsy6uyxrb7rbuka.py
+[2026-06-05 23:36:03.922] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:03.944] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233603_029fea29.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233603_029fea29.log
+ReLU 32x32 -> Native Cycles: 1, TF Cycles: 1
+
+[GEMM (non-square Matmul 16x32x64)]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:08.778] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/vo/cvo4nlaucnof2yhr4to2f6j4hh5nqnzbnrxztg7nabhsanj2zsqa.py
+[2026-06-05 23:36:08.820] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:08.842] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233608_c629df60.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233608_c629df60.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:13.771] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/vo/cvo4nlaucnof2yhr4to2f6j4hh5nqnzbnrxztg7nabhsanj2zsqa.py
+[2026-06-05 23:36:13.818] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:13.845] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233613_ef85563a.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233613_ef85563a.log
+GEMM (non-square Matmul 16x32x64) -> Native Cycles: 521, TF Cycles: 521
+
+[Conv2D 14x14x8 to 16]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:18.682] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/ox/coxqsq6jzs73qoki3ifxydb4qqhp7qo6g2bqp2vtffzaqvza42yg.py
+[2026-06-05 23:36:18.721] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:18.740] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233618_5fe57679.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233618_5fe57679.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:23.797] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/ox/coxqsq6jzs73qoki3ifxydb4qqhp7qo6g2bqp2vtffzaqvza42yg.py
+[2026-06-05 23:36:23.843] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:23.866] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233623_371fb731.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233623_371fb731.log
+Conv2D 14x14x8 to 16 -> Native Cycles: 1, TF Cycles: 1
+
+[Perceptron 8x32->16]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:29.011] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3s/c3sd7dtucc7eow4w2qxu3escedelvivi4fj5mx3ydbiyiugzqam2.py
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:50:7: error: Unexpected dram buffer argument: %10 = "memref.reinterpret_cast"(%9) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<8x16xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride = [16, 1], sram_stride = [1, 8], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:50:7: note: see current operation: "memref.dma_start"(%13, %4, %4, %10, %33, %2, %14, %4, %3, %3) {dram_stride = [16, 1], padding = 0 : i64, sram_stride = [1, 8]} : (memref<8x16xf32, 1>, index, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:75:9: error: Unexpected dram buffer argument: %20 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_3_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:75:9: note: see current operation: "memref.dma_start"(%20, %arg6, %26, %4, %0, %23, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:76:9: error: Unexpected dram buffer argument: %21 = "memref.reinterpret_cast"(%18) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:76:9: note: see current operation: "memref.dma_start"(%21, %arg6, %27, %4, %0, %24, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:83:9: error: Unexpected dram buffer argument: %22 = "memref.reinterpret_cast"(%19) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %spad2_1[%c0_1], %flat_alloc_5_1[%index0_1], %c_tile_1, %alloc2_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:83:9: note: see current operation: "memref.dma_start"(%28, %4, %22, %arg6, %0, %25, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32, 1>, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x1cc): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x1d4): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x1dc): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:34.047] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/3s/c3sd7dtucc7eow4w2qxu3escedelvivi4fj5mx3ydbiyiugzqam2.py
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:50:7: error: Unexpected dram buffer argument: %10 = "memref.reinterpret_cast"(%9) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<8x16xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride = [16, 1], sram_stride = [1, 8], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:50:7: note: see current operation: "memref.dma_start"(%13, %4, %4, %10, %33, %2, %14, %4, %3, %3) {dram_stride = [16, 1], padding = 0 : i64, sram_stride = [1, 8]} : (memref<8x16xf32, 1>, index, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:75:9: error: Unexpected dram buffer argument: %20 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_3_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:75:9: note: see current operation: "memref.dma_start"(%20, %arg6, %26, %4, %0, %23, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:76:9: error: Unexpected dram buffer argument: %21 = "memref.reinterpret_cast"(%18) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:76:9: note: see current operation: "memref.dma_start"(%21, %arg6, %27, %4, %0, %24, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:83:9: error: Unexpected dram buffer argument: %22 = "memref.reinterpret_cast"(%19) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %spad2_1[%c0_1], %flat_alloc_5_1[%index0_1], %c_tile_1, %alloc2_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr.mlir:83:9: note: see current operation: "memref.dma_start"(%28, %4, %22, %arg6, %0, %25, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32, 1>, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x1cc): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x1d4): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/fdhmx5gbbjo/cfdhmx5gbbjoi62cpfgzt5mf6fq2iarhxw4x7egwjwifyfp7gjdr_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x1dc): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+Perceptron 8x32->16 -> Native Cycles: 0, TF Cycles: 0
+
+[Sigmoid Linear 8x32->16]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:39.003] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/5m/c5mk7iisk6zlzqvfbrzs7htzaanheoyglaw6dzwypbjnghxchhyz.py
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:49:7: error: Unexpected dram buffer argument: %9 = "memref.reinterpret_cast"(%8) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<8x16xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride = [16, 1], sram_stride = [1, 8], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:49:7: note: see current operation: "memref.dma_start"(%12, %4, %4, %9, %31, %2, %13, %4, %3, %3) {dram_stride = [16, 1], padding = 0 : i64, sram_stride = [1, 8]} : (memref<8x16xf32, 1>, index, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:74:9: error: Unexpected dram buffer argument: %19 = "memref.reinterpret_cast"(%16) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:74:9: note: see current operation: "memref.dma_start"(%19, %arg4, %25, %4, %0, %22, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:75:9: error: Unexpected dram buffer argument: %20 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_5_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:75:9: note: see current operation: "memref.dma_start"(%20, %arg4, %26, %4, %0, %23, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:82:9: error: Unexpected dram buffer argument: %21 = "memref.reinterpret_cast"(%18) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %spad2_1[%c0_1], %flat_alloc_6_1[%index0_1], %c_tile_1, %alloc2_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:82:9: note: see current operation: "memref.dma_start"(%27, %4, %21, %arg4, %0, %24, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32, 1>, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x1cc): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x1d4): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x1dc): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:43.833] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/5m/c5mk7iisk6zlzqvfbrzs7htzaanheoyglaw6dzwypbjnghxchhyz.py
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:49:7: error: Unexpected dram buffer argument: %9 = "memref.reinterpret_cast"(%8) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+      memref.dma_start %Y_buffer[%t_const0, %t_const0], %flat_alloc_0[%epilogue_apply0], %t_const2, %t_alloc0[%t_const0], %t_const1, %t_const1 : memref<8x16xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride = [16, 1], sram_stride = [1, 8], padding = 0}
+      ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:49:7: note: see current operation: "memref.dma_start"(%12, %4, %4, %9, %31, %2, %13, %4, %3, %3) {dram_stride = [16, 1], padding = 0 : i64, sram_stride = [1, 8]} : (memref<8x16xf32, 1>, index, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:74:9: error: Unexpected dram buffer argument: %19 = "memref.reinterpret_cast"(%16) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_4_1[%index0_1], %spad0_1[%c0_1], %c_tile_1, %alloc0_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:74:9: note: see current operation: "memref.dma_start"(%19, %arg4, %25, %4, %0, %22, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:75:9: error: Unexpected dram buffer argument: %20 = "memref.reinterpret_cast"(%17) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %flat_alloc_5_1[%index0_1], %spad1_1[%c0_1], %c_tile_1, %alloc1_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32>, memref<128xf32, 1>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:75:9: note: see current operation: "memref.dma_start"(%20, %arg4, %26, %4, %0, %23, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32>, index, memref<128xf32, 1>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:82:9: error: Unexpected dram buffer argument: %21 = "memref.reinterpret_cast"(%18) <{operandSegmentSizes = array<i32: 1, 0, 0, 0>, static_offsets = array<i64: 0>, static_sizes = array<i64: 128>, static_strides = array<i64: 1>}> : (memref<8x16xf32>) -> memref<128xf32>
+
+        memref.dma_start %spad2_1[%c0_1], %flat_alloc_6_1[%index0_1], %c_tile_1, %alloc2_1[%c0_1], %c0_1, %c_tile_1 : memref<128xf32, 1>, memref<128xf32>, memref<1xi32> {dram_stride=[1], sram_stride=[1], padding=0}
+        ^
+/workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g.mlir:82:9: note: see current operation: "memref.dma_start"(%27, %4, %21, %arg4, %0, %24, %4, %4, %0) {dram_stride = [1], padding = 0 : i64, sram_stride = [1]} : (memref<128xf32, 1>, index, memref<128xf32>, index, index, memref<1xi32>, index, index, index) -> ()
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi3':
+LLVMDialectModule:(.text+0x1cc): undefined reference to `buf_1_spad2'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi4':
+LLVMDialectModule:(.text+0x1d4): undefined reference to `buf_1_spad1'
+/workspace/riscv/bin/../lib/gcc/riscv64-unknown-elf/13.2.0/../../../../riscv64-unknown-elf/bin/ld: /workspace/PyTorchSim/outputs/zipd5cwr4cj/czipd5cwr4cjf7hzsx3gswuinzlvrmrl7dr6pudui57aavthtl7g_sample.o: in function `.Lpcrel_hi5':
+LLVMDialectModule:(.text+0x1dc): undefined reference to `buf_1_spad0'
+collect2: error: ld returned 1 exit status
+Command failed with exit code 1
+Error output: None
+Exception during run_tf_npu_timing:
+Sigmoid Linear 8x32->16 -> Native Cycles: 0, TF Cycles: 0
+
+[Large Matmul 64x128x32]
+--- Running Torch Native Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:48.825] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/k4/ck4z3hareyeghxtzllxf2w4ydugehdfw2uwbitj6x2wygzxuuwgp.py
+[2026-06-05 23:36:48.867] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:48.893] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233648_e820ed81.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233648_e820ed81.log
+--- Running TF NPU Codegen Timing Simulation ---
+--- Running TF NPU Codegen Timing Simulation ---
+[2026-06-05 23:36:53.706] [INFO] [pytorchsimfrontend.mlir.generated_wrapper] Wrapper Codegen Path = /workspace/PyTorchSim/outputs/.torchinductor/k4/ck4z3hareyeghxtzllxf2w4ydugehdfw2uwbitj6x2wygzxuuwgp.py
+[2026-06-05 23:36:53.743] [INFO] [simulator.simulator] [TOGSim] TOGSim simulation started
+[2026-06-05 23:36:53.768] [INFO] [simulator.simulator] [TOGSim] Simulation log is stored to "/workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233653_9031bc50.log"
+Parsing timing metrics from: /workspace/PyTorchSim/Tensorflow/tests/togsim_results/20260605_233653_9031bc50.log
+Large Matmul 64x128x32 -> Native Cycles: 740, TF Cycles: 740
+
+SUCCESS: Timing simulation executed for all paths! Results saved to timing_results.json.
+root@09058bde5670:/workspace/PyTorchSim/Tensorflow/tests# 
